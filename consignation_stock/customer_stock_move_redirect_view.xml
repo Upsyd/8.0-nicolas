@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="partner_view_consign_location_stock_move">
+            <field name="name">partner.view.consign.stock.move</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form" />
+            <field name="priority" eval="21"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='buttons']" position="inside">
+                    <button type="object" string="Consignation Stock" class="oe_stat_button" name="action_open_window_stock_move">
+                    </button>
+                </xpath>
+            </field>
+        </record>
+
+
+        <record model="ir.ui.view" id="stock_move_partner_extended">
+            <field name="name">stock.move.partner.extended</field>
+            <field name="model">stock.move</field>
+            <field name="inherit_id" ref="stock.view_move_form"/>
+            <field name="arch" type="xml">
+                <field name="partner_id" position="replace">
+					<field name="partner_id" context="{'contact_display':'partner'}"/>
+                </field>
+            </field>
+        </record>
+
+
+        <record model="ir.ui.view" id="stock_move_search_extended_extended">
+            <field name="name">stock.move.partner.extended.search</field>
+            <field name="model">stock.move</field>
+            <field name="inherit_id" ref="stock.view_move_search"/>
+            <field name="arch" type="xml">
+                <field name="product_id" position="after">
+                    <field name="picking_type_id"/>
+                    <field name="location_dest_id"/>
+                </field>
+            </field>
+        </record>
+
+
+        <record model="ir.ui.view" id="product_template_consignation_product_location">
+            <field name="name">product.template.extended.consignation</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="arch" type="xml">
+                <field name="property_stock_inventory" position="after">
+                    <field name="consignation_location_id" domain="[('usage','=','customer')]"/>
+                </field>
+            </field>
+        </record>
+
+
+
+    </data>
+</openerp>

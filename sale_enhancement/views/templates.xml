@@ -1,0 +1,836 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<template id="website.theme_cust" name="theme_custom" inherit_id="website.theme" priority="1">
+          <xpath expr="//link[last()]" position="after">
+            <link href="/sale_enhancement/static/src/lib/owlcarousel/css/owl.animate.css" rel="stylesheet" />
+            <link href="/sale_enhancement/static/src/lib/owlcarousel/css/owl.autoheight.css" rel="stylesheet" />
+            <link href="/sale_enhancement/static/src/lib/owlcarousel/css/owl.carousel.css" rel="stylesheet" />
+            <link href="/sale_enhancement/static/src/lib/owlcarousel/css/owl.lazyload.css" rel="stylesheet" />
+            <link href="/sale_enhancement/static/src/lib/owlcarousel/css/owl.theme.default.css" rel="stylesheet" />
+            <link href="/sale_enhancement/static/src/lib/owlcarousel/css/owl.video.css" rel="stylesheet" />
+            <link href="/sale_enhancement/static/src/lib/bootstrap-magnify/css/bootstrap-magnify.css" rel="stylesheet" />
+          </xpath>
+        </template>
+
+        <template id="assets_frontend" inherit_id="website.assets_frontend">
+          <xpath expr="." position="inside">
+              <link rel="stylesheet" href="/sale_enhancement/static/src/css/sale_enhancement.css" />
+              <script type="text/javascript" src="/sale_enhancement/static/src/js/main.js"></script>
+              <script type="text/javascript" src="/sale_enhancement/static/src/lib/owlcarousel/js/owl.carousel.js"></script>
+              <script type="text/javascript" src="/sale_enhancement/static/src/lib/bootstrap-magnify/js/bootstrap-magnify.js"></script>
+          </xpath>
+        </template>
+
+
+	<!--template id="layout_logo_show_website" inherit_id="website.layout_logo_show">
+    	<xpath expr="//header//img[@src='/logo.png']" position="replace">
+            <img src="/website/logo.png" t-att-alt="'Logo of %s' % res_company.name" t-att-title="res_company.name"/>
+    	</xpath>
+	</template-->
+
+
+	<template id="product_categories_recursive" name="Top Brand">
+        <t t-if="c">
+            <li id="main_menu" t-att-class="'select_li' if (int(c) == category.id if category else 0) or (int(c) == id)  else ''">
+                <a t-attf-href="/shop/category/#{ int(c)}/#{slug(c)}?{{ keep_query() }}" t-att-id="int(c)" t-field="c.name">
+                </a>
+            </li>
+        </t>
+        <t t-if="d1">
+            <t t-if="id">
+                <li class="left_categ parent dropdown" t-att-name="d1.parent_id.id" t-att-id="category.id" t-att-class="'active' if d1.id == int(category or 0) else ''">
+                <a class="left_categ" t-att-id="d1.parent_id.id" t-att-name="d1.id" t-att-href="keep('/shop/category/%s/%s' % (slug(d1), category.id))">
+                    <span class="menu-title">
+                        <t t-esc="d1.name"/>
+                    </span>
+                    <b t-if="d1.child_id" class="caret"></b>
+                </a>
+                <div t-if="d1.child_id" class="dropdown-menu level1">
+                    <div class="dropdown-menu-inner">
+                        <div class="row">
+                            <div class="mega-col col-md-12" data-type="menu">
+                                <div class="mega-col-inner">
+                                    <ul class="parent dropdown-submenu" t-if="d1.child_id" t-att-name="d1.id" t-att-id="category.id">
+                                        <t t-foreach="d1.child_id" t-as="d1" class="dropdown-toggle" data-toggle="dropdown">
+                                            <t t-if="d1.id in sub_categ">
+                                                <t t-call="sale_enhancement.product_categories_recursive" />
+                                            </t>
+                                        </t>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </li>
+            </t>
+            <t t-if="not id">
+                <li class="left_categ parent dropdown" t-att-name="d1.parent_id.id" t-att-id="d1.id" t-att-class="'active' if d1.id == int(category or 0) else ''">
+                <a class="left_categ" t-att-id="d1.id" t-att-name="d1.parent_id.id" t-att-href="keep('/shop/category/' + slug(d1))">
+                    <span class="menu-title">
+                        <t t-esc="d1.name"/>
+                    </span>
+                    <b t-if="d1.child_id" class="caret"></b>
+                </a>
+                <div t-if="d1.child_id" class="dropdown-menu level1">
+                    <div class="dropdown-menu-inner">
+                        <div class="row">
+                            <div class="mega-col col-md-12" data-type="menu">
+                                <div class="mega-col-inner">
+                                    <ul class="parent dropdown-submenu" t-if="d1.child_id" t-att-id="d1.parent_id.id">
+                                        <t t-foreach="d1.child_id" t-as="d1" class="dropdown-toggle" data-toggle="dropdown">
+                                            <t t-if="d1.id in sub_categ">
+                                                <t t-call="sale_enhancement.product_categories_recursive" />
+                                            </t>
+                                        </t>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </li>
+            </t>
+        </t>
+    </template>
+<template id="header" inherit_id="website.layout" name="Header Shop My Cart Link">
+    <xpath expr="//header//a[@class='navbar-brand']" position="after">
+    	<t t-if="request.httprequest.path.startswith('/shop')">
+        <div class="hidden-xs hidden-sm inner pull-left" style="height: 75px;margin-top: 15px;">
+            <div class="support">
+                <div class="box-services">
+                    <span class="pull-left">
+                        <i class="fa fa-truck"></i>
+                    </span>
+                    <div class="media-body">
+                        <h3>free shipping</h3>
+                        <small>all order over $150</small>
+                    </div>
+                </div>
+                <div class="box-services">
+                    <span class="pull-left">
+                        <i class="fa fa-refresh"></i>
+                    </span>
+                    <div class="media-body" >
+                        <h3>Return &amp; Exchange</h3>
+                        <small>in 3 working days</small>
+                    </div>
+                </div>
+                <div class="box-services">
+                    <span class="pull-left">
+                        <i class="fa fa-phone"></i>
+                    </span>
+                    <div class="media-body">
+                        <h3>04 123 456 789</h3>
+                        <small>Sed ullamcorper mattis</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </t>
+    </xpath>
+    <xpath expr="//header//ul[@id='top_menu']/li" position="before">
+        <t t-set="website_sale_order" t-value="website.sale_get_order()"/>
+        <li t-att-class="'' if website_sale_order and website_sale_order.cart_quantity else 'hidden'">
+            <div class="box-services" style="width:115px;">
+                <span class="pull-left">
+                    <i class="icon-cart"></i>
+                </span>
+            </div>
+            <div class="cart-top">
+                <div id="cart" class="cart">
+                    <div class="cart-inner media-body" >
+                        <h4 style="margin-bottom:0px;">Latest</h4>
+                        <a href="/shop/cart" style="color: #9B9D9E;">
+                            <t t-esc="website_sale_order and website_sale_order.cart_quantity or '0'"/> item(s)
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </xpath>
+    <xpath expr="//header" position="inside">
+        <div id="header" class="custom-menu">
+            <div id="pav-mainnav">
+                <div class="container">
+                    <div class="pav-megamenu">
+                        <div class="navbar navbar-default">
+                            <div id="mainmenutop" class="megamenu" role="navigation">
+                                <div class="navbar-header">
+                                    <a class="navbar-toggle hidden-lg hidden-md" href="javascript:;" data-target=".navbar-collapse" data-toggle="collapse">
+                                        <span class="fa fa-bars">
+                                        </span>
+                                    </a>
+                                    <div class="collapse navbar-collapse navbar-ex1-collapse hidden-sm hidden-xs">
+                                        <ul id="tp_menu" class="nav navbar-nav megamenu">
+                                            <li t-att-class="'select_li home first' if request.httprequest.path == '/shop'  else 'home first'">
+                                                <a t-attf-href="/shop">
+                                                    <span class="menu-title">
+                                                        Home
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <t t-if="request.httprequest.path.startswith('/shop') or request.httprequest.path.startswith('/page/contactus') or request.httprequest.path.startswith('/page/website.contactus')">
+                                                <t t-foreach="int_categories" t-as="c">
+                                                    <t t-if="c.name != 'Deliveries'">
+                                                        <t t-call="sale_enhancement.product_categories_recursive"/>
+                                                    </t>
+                                                </t>
+                                            </t>
+                                            <t t-foreach="website.menu_id.child_id" t-as="submenu">
+                                                <t t-if="submenu.name != 'Shop'">
+                                                    <t t-call="website.submenu"/>
+                                                </t>
+                                            </t>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </xpath>
+</template>
+<template id="header_topmenu" inherit_id="website.layout" name="Header Menu">
+    <xpath expr="//header/div" position="attributes">
+        <attribute name="class">navbar navbar-default</attribute>
+        <attribute name="style">height:90px;</attribute>
+    </xpath>
+    <xpath expr="//header/div" position="before">
+        <div class="navbar navbar-default navbar-static-top">
+            <div class="offcanvas-container">
+                <section id="page" class="offcanvas-pusher" role="main">
+                    <div id="topbar">
+                        <div class="container">
+                            <div class="show-desktop">
+                                <div class="quick-top-link">
+                                    <div class="language btn-top pull-left">
+                                        <div class="language-wrapper pull-right" style="height:25px;">
+                                            <div t-ignore="true" t-if="website.user_id != user_id" class="quick-access btn-group btn-top" style="vertical-align:top; height:25px;">
+                                                <button type="button" class="form-control" data-toggle="dropdown">
+                                                    <span class="quick-icon">
+                                                        <t t-esc="user_id.name"/>
+                                                        <span class="fa fa-sort-asc"></span>
+                                                    </span>
+                                                </button>
+                                                <div class="dropdown-menu-new">
+                                                    <ul class="links">
+                                                            <a class="account" href="/web">
+                                                                <span class="fa fa-user"></span>
+                                                                My Account
+                                                            </a>
+                                                            <a class="list-item-new" href="/web/session/logout?redirect=/">
+                                                                <span class="fa fa-file"></span>
+                                                                Logout
+                                                            </a>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            <!--div t-ignore="true" t-if="website.user_id == user_id" style="font-size: 16px;">
+                                                <a href="/web/login" role="menuitem" style="color:red;">
+                                                    Sign in
+                                                </a>
+                                            </div-->
+                                            <t t-set="languages" t-value="website.get_languages()"/>
+                                            <div id="all_lang" class="language btn-group btn-top" style="vertical-align:top; height:25px;">
+                                                <button type="button" class="form-control" data-toggle="dropdown" t-ignore="true" t-if="(len(languages) &gt; 1 or editable)">
+                                                    <t t-foreach="languages" t-as="lg">
+                                                        <t t-if="lg[0] == website.default_lang_code">
+                                                            <span id="lang">
+                                                                <t t-esc="lg[1].split('/').pop()"/>
+                                                            </span>
+                                                            <span class="fa fa-sort-asc"></span>
+                                                        </t>
+                                                    </t>
+                                                </button>
+                                                <div class="dropdown-menu-new">
+                                                    <div class="box-language">
+                                                        <t t-foreach="languages" t-as="lg">
+                                                            <a t-att-href="url_for('', lang=lg[0]) + '?' + keep_query()" t-att-data-default-lang="editable and 'true' if lg[0] == website.default_lang_code else None" class="list-item-new">
+                                                                <span class="item-name"><t t-esc="lg[1].split('/').pop()"/></span>
+                                                            </a>
+                                                        </t>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="header-main" t-if="request.httprequest.path == '/shop/home' or request.httprequest.path == '/shop' or request.httprequest.path.startswith('/shop/category') or request.httprequest.path.startswith('/shop/product')">
+                            <div class="container">
+                                <div id="search">
+                                    <t t-if="id">
+                                        <form t-att-action="keep('/shop'+ ('/category/' + id + '/' + slug(category)) if category else '', search=0)" method="get" class="pagination form-inline col-md-3">
+                                            <t t-if="attrib_values">
+                                                <t t-foreach="attrib_values" t-as="a">
+                                                    <input type="hidden" name="attrib" t-att-value="'%s-%s' % (a[0], a[1])"/>
+                                                </t>
+                                            </t>
+                                            <div class="input-group">
+                                                    <input type="text" name="search" class="input-search search-query form-control" placeholder="Search..." t-att-value="search"/>
+                                                    <span>
+                                                        <button class="button-search" type="submit"><i class="fa fa-search"></i></button>
+                                                    </span>
+                                            </div>
+                                        </form>
+                                    </t>
+                                    <t t-if="not id">
+                                        <form t-att-action="keep('/shop'+ ('/category/'+slug(category)) if category else '', search=0)" method="get" class="pagination form-inline col-md-3">
+                                            <t t-if="attrib_values">
+                                                <t t-foreach="attrib_values" t-as="a">
+                                                    <input type="hidden" name="attrib" t-att-value="'%s-%s' % (a[0], a[1])"/>
+                                                </t>
+                                            </t>
+                                            <div class="input-group">
+                                                    <input type="text" name="search" class="input-search search-query form-control" placeholder="Search..." t-att-value="search"/>
+                                                    <span class="input-group-btn">
+                                                        <button class="button-search" type="submit"><i class="fa fa-search"></i></button>
+                                                    </span>
+                                            </div>
+                                        </form>
+                                    </t>
+                                </div>
+                            </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </xpath>
+    <xpath expr="//header//ul[@id='top_menu']" position="replace">
+            <ul class="nav navbar-nav navbar-right" id="top_menu" style="padding-top:15px;">
+                <!--t t-if="not request.httprequest.path == '/shop' and not request.httprequest.path == '/shop/page/' and not request.httprequest.path.startswith('/shop/page/') and not request.httprequest.path.startswith('/shop/category/')">
+                    <t t-foreach="website.menu_id.child_id" t-as="submenu">
+                        <t t-call="website.submenu"/>
+                    </t>
+                    <li class="divider" t-ignore="true" t-if="website.user_id != user_id and not request.httprequest.path.startswith('/shop')"/>
+                    <li class="dropdown" t-ignore="true" t-if="website.user_id != user_id and not request.httprequest.path.startswith('/shop')">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <b>
+                                <span t-esc="user_id.name"/>
+                                <span class="caret"></span>
+                            </b>
+                        </a>
+                        <ul class="dropdown-menu js_usermenu" role="menu">
+                            <li><a href="/web" role="menuitem">My Account</a></li>
+                            <li class="divider"/>
+                            <li><a t-attf-href="/web/session/logout?redirect=/" role="menuitem">Logout</a></li>
+                        </ul>
+                    </li>
+                </t-->
+
+                <t t-set="website_sale_order" t-value="website.sale_get_order()"/>
+                <li t-att-class="'hidden' if website_sale_order and website_sale_order.cart_quantity else ''">
+                    <div class="box-services" style="width:115px;">
+                        <span class="pull-left">
+                            <i class="icon-cart"></i>
+                        </span>
+                    </div>
+                    <div class="cart-top">
+                        <div id="cart" class="cart">
+                            <div class="cart-inner media-body">
+                                <h4 style="margin-bottom:0px;">Latest</h4>
+                                <a href="/shop/cart" style="color: #9B9D9E;">
+                                    <t t-esc="website_sale_order and website_sale_order.cart_quantity or '0'"/> item(s)
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li></li>
+            </ul>
+    </xpath>
+</template>
+
+<template id="footer_customize" inherit_id="website.footer_default" name="Customize Footer">
+    <xpath expr="//div[@class='container hidden-print']" position="replace">
+        <div id="footer" class="footer-center">
+                <div class="container hidden-print">
+                    <div class="row">
+                        <div class="col-md-3 box pav-custom" name="product">
+                            <div class="box-heading">Our products &amp; Services</div>
+                            <ul class="list-unstyled" name="products" id="products">
+                                <li>
+                                    <a href="/">Home</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-3 box pav-custom" name="info" id="info">
+                            <div class="box-heading">Connect with us</div>
+                            <ul class="list-unstyled">
+                                <li>
+                                    <a href="/page/website.contactus">Contact us</a>
+                                </li>
+                            </ul>
+                            <ul class="social">
+                                <li t-ignore="true" style="line-height:30px;">
+                                    <a href="#">
+                                        <span class="fa fa-mobile-phone"></span>
+                                    </a>
+                                    Phone: <em t-field="res_company.phone"/>
+                                </li>
+                                <li t-ignore="true" style="line-height:30px;">
+                                    <a href="#">
+                                        <span class="fa fa-envelope"></span>
+                                    </a>
+                                     Email: <em t-field="res_company.email"/>
+                                </li>
+                            </ul>
+                            <h2>
+                                <a t-att-href="website.social_facebook" t-if="website.social_facebook">
+                                    <i class="fa fa-facebook-square"/>
+                                </a>
+                                <a t-att-href="website.social_twitter" t-if="website.social_twitter">
+                                    <i class="fa fa-twitter"/>
+                                </a>
+                                <a t-att-href="website.social_linkedin" t-if="website.social_linkedin">
+                                    <i class="fa fa-linkedin"/>
+                                </a>
+                                <a t-att-href="website.social_youtube" t-if="website.social_youtube">
+                                    <i class="fa fa-youtube-play"/>
+                                </a>
+                                <a t-att-href="website.social_googleplus" t-if="website.social_googleplus">
+                                    <i class="fa fa-google-plus-square"/>
+                                </a>
+                                <a t-att-href="website.social_github" t-if="website.social_github">
+                                    <i class="fa fa-github"/>
+                                </a>
+                            </h2>
+                        </div>
+                        <div class="col-md-5 col-lg-offset-1 box pav-custom" name="about_us">
+                            <div>
+                                <div class="box-heading">
+                                    <span t-field="res_company.name"/>
+                                    <small> -
+                                        <a href="/page/website.aboutus">About us</a>
+                                    </small>container
+                                </div>
+                                <p>We are a team of passionate people whose goal is to improve evone's life through disruptive products. We build great products to solve your business problems.</p>
+                                <p>Our products are designed for small to medium size companies willing to optimize their performance.</p>
+                            </div>
+                            <t t-set="languages" t-value="website.get_languages()"/>
+                            <ul class="list-inline js_language_selector mt16" t-if="(len(languages) &gt; 1 or editable)">
+                                <li t-foreach="languages" t-as="lg">
+                                    <a t-att-href="url_for('', lang=lg[0]) + '?' + keep_query()" t-att-data-default-lang="editable and 'true' if lg[0] == website.default_lang_code else None">
+                                        <t t-esc="lg[1].split('/').pop()"/>
+                                    </a>
+                                </li>
+                                <li groups="base.group_website_publisher">
+                                    <t t-set="url_return" t-value="url_for('', '[lang]') + '?' + keep_query()"/>
+                                    <a t-attf-href="/web#action=base.action_view_base_language_install&amp;website_id=#{website.id}&amp;url_return=#{url_return}">
+                                        <i class="fa fa-plus-circle"/>
+                                        Add a language...
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </xpath>
+</template>
+<template id="website.layout_footer_copyright" inherit_id="website.layout" name="Footer Copyright">
+    <xpath expr="//footer" position="inside">
+        <div id="footer" class="footer-center">
+            <div class="container mt16 mb8">
+                <div class="pull-right" t-ignore="true" t-if="not editable">
+                    Create a <a href="http://www.odoo.com/page/website-builder">free website</a> with
+                    <a class="label label-danger" href="http://www.odoo.com/page/website-builder">Odoo</a>
+                </div>
+                <div class="pull-left text-muted">
+                    Copyright &amp;copy; <span t-field="res_company.name">Company name</span>
+                </div>
+            </div>
+        </div>
+    </xpath>
+</template>
+
+<template id="product_topmenu" inherit_id="website_sale.products" name="Top Menu">
+    <xpath expr="//div[@id='products_grid']" position="before">
+        <div id="cust_carousel" class="oe_structure col-md-9"/>
+    </xpath>
+    <xpath expr="//div[@id='products_grid']" position="replace">
+        <div class="col-md-9" id="products_grid">
+           <!-- <t t-if="request.httprequest.path.startswith('/shop/category') or search">-->
+              <table width="100%">
+                <tbody>
+                  <tr t-ignore="true">
+                    <td t-foreach="range(0,rows)" t-as="row" t-attf-width="#{100/rows}%"></td>
+                  </tr>
+                  <tr t-foreach="bins" t-as="tr_product">
+                    <t t-foreach="tr_product" t-as="td_product">
+                      <t t-if="td_product">
+                      <t t-set="product" t-value="td_product['product']"/>
+                      <td t-att-colspan="td_product['x'] != 1 and td_product['x']"
+                          t-att-rowspan="td_product['y'] != 1 and td_product['y']"
+                          t-attf-class="oe_product oe_grid oe-height-#{td_product['y']*2} #{ td_product['class'] }">
+
+                          <div class="oe_product_cart" t-att-data-publish="product.website_published and 'on' or 'off'">
+
+                            <div class="css_options" t-ignore="true" groups="base.group_website_publisher">
+                              <div t-attf-class="dropdown js_options" t-att-data-id="product.id">
+                                <button class="btn btn-default" t-att-id="'dopprod-%s' % product.id" role="button" data-toggle="dropdown">Options <span class="caret"></span></button>
+                                <ul class="dropdown-menu" role="menu" t-att-aria-labelledby="'dopprod-%s' % product.id">
+                                  <li class='dropdown-submenu'>
+                                    <a tabindex="-1" href="#">Size</a>
+                                    <ul class="dropdown-menu" name="size">
+                                      <li><a href="#">
+                                        <table>
+                                          <tr>
+                                            <td class="selected"></td>
+                                            <td t-att-class="product.website_size_x > 1 and 'selected'"></td>
+                                            <td t-att-class="product.website_size_x > 2 and 'selected'"></td>
+                                            <td t-att-class="product.website_size_x > 3 and 'selected'"></td>
+                                          </tr>
+                                          <tr>
+                                            <td t-att-class="product.website_size_y > 1 and 'selected'"></td>
+                                            <td t-att-class="product.website_size_y > 1 and product.website_size_x > 1 and 'selected'"></td>
+                                            <td t-att-class="product.website_size_y > 1 and product.website_size_x > 2 and 'selected'"></td>
+                                            <td t-att-class="product.website_size_y > 1 and product.website_size_x > 3 and 'selected'"></td>
+                                          </tr>
+                                          <tr>
+                                            <td t-att-class="product.website_size_y > 2 and 'selected'"></td>
+                                            <td t-att-class="product.website_size_y > 2 and product.website_size_x > 1 and 'selected'"></td>
+                                            <td t-att-class="product.website_size_y > 2 and product.website_size_x > 2 and 'selected'"></td>
+                                            <td t-att-class="product.website_size_y > 2 and product.website_size_x > 3 and 'selected'"></td>
+                                          </tr>
+                                          <tr>
+                                            <td t-att-class="product.website_size_y > 3 and 'selected'"></td>
+                                            <td t-att-class="product.website_size_y > 3 and product.website_size_x > 1 and 'selected'"></td>
+                                            <td t-att-class="product.website_size_y > 3 and product.website_size_x > 2 and 'selected'"></td>
+                                            <td t-att-class="product.website_size_y > 3 and product.website_size_x > 3 and 'selected'"></td>
+                                          </tr>
+                                        </table>
+                                      </a></li>
+                                    </ul>
+                                  </li>
+                                  <li class='dropdown-submenu'>
+                                    <a tabindex="-1" href="#">Styles</a>
+                                    <ul class="dropdown-menu" name="style">
+                                      <t t-foreach="styles" t-as="style">
+                                        <li t-att-class="style_in_product(style, product) and 'active' or ''"><a href="#" t-att-data-id="style.id" t-att-data-class="style.html_class"><t t-esc="style.name"/></a></li>
+                                      </t>
+                                    </ul>
+                                  </li>
+                                  <li class='dropdown-submenu'>
+                                      <a tabindex="-1" href="#">Promote</a>
+                                      <ul class="dropdown-menu" name="sequence">
+                                          <li><a href="#" class="js_go_to_top">Push to top</a></li>
+                                          <li><a href="#" class="js_go_up">Push up</a>
+                                          </li>
+                                          <li><a href="#" class="js_go_down">Push down</a></li>
+                                          <li><a href="#" class="js_go_to_bottom">Push to bottom</a></li>
+                                      </ul>
+                                  </li>
+                                </ul>
+                              </div>
+                            </div>
+                            <t t-set="product_image_big" t-value="td_product['x']+td_product['y'] > 2"/>
+                            <t t-call="website_sale.products_item"/>
+                          </div>
+
+                      </td>
+                      </t>
+                      <td t-if="not td_product" class="oe-height-2"/>
+                    </t>
+                  </tr>
+                </tbody>
+              </table>
+              <t t-if="not bins">
+                <div class="text-center text-muted">
+                  <h3 class="css_editable_display">No product defined.</h3>
+                  <t groups="base.group_website_publisher">
+                    <p groups="base.group_sale_manager">Use the <i>'Content'</i> top menu to create a new product.</p>
+                  </t>
+                </div>
+              </t>
+          <!--  </t> -->
+        </div>
+    </xpath>
+    <xpath expr="//div[@id='wrap']//div[@class='products_pager']" position="replace">
+        <div class="products_pager">
+            <div class="row" style="width: 100%;">
+                <div class="col-sm-12">
+                    <div class="col-sm-6" t-if="category" style="text-align:left;">
+                    <ol id="breadcrumb" class="breadcrumb">
+                        <li t-if="category"><a t-attf-href="/shop">Home</a></li>
+                        <t t-foreach="b_crumb" t-as="bc">
+                            <li t-if="id"><a t-att-href="keep('/shop/category/%s/%s' % (slug(bc), category.id if category else None))" t-field="bc.name"/></li>
+                            <li t-if="not id"><a t-att-href="keep('/shop/category/' + slug(bc) )" t-field="bc.name"/></li>
+                        </t>
+                        <t t-if="main_categ">
+                            <li t-if="category"><a t-att-href="keep('/shop/category/%s/%s' % (slug(main_categ), category.id if category else None))" t-field="main_categ.name"/></li>
+                        </t>
+                        <t t-if="not main_categ">
+                            <t t-if="id">
+                                <li t-if="category"><a t-att-href="keep('/shop/category/%s/%s' % (id, slug(category)))" t-field="category.name"/></li>
+                            </t>
+                            <t t-if="not id">
+                                <li t-if="category"><a t-att-href="keep('/shop/category/' + slug(category))" t-field="category.name"/></li>
+                            </t>
+                        </t>
+                        <t t-if="search and category">
+                            <li style="color:#428bca;">Filter: <t t-esc="search"/></li>
+                        </t>
+                    </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </xpath>
+</template>
+
+<template id="custom_left_category" inherit_id="website_sale.products_categories" name="Left Category">
+    <xpath expr="//ul[@class='nav nav-pills nav-stacked mt16']" position="replace">
+        <div id="pav-verticalmenu" class="box pav-verticalmenu highlighted hidden-xs hidden-sm">
+            <div class="box-heading">
+                <span class="fa fa-bars"></span>
+                    All Products
+                <span class="shapes round">
+                    <em class="shapes bottom"></em>
+                </span>
+            </div>
+            <div class="box-content">
+                <div class="navbar navbar-default">
+                    <div id="verticalmenu" class="verticalmenu" role="navigation">
+                        <div class="navbar-header">
+                            <a href="javascript:;" data-target=".navbar-collapse" data-toggle="collapse" class="navbar-toggle">
+                                <span class="icon-bar">
+                                </span>
+                            </a>
+                            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                                <ul id="left_main" class="nav navbar-nav verticalmenu">
+                                    <t t-foreach="categories" t-as="d1">
+                                        <t t-call="sale_enhancement.product_categories_recursive"/>
+                                    </t>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </xpath>
+</template>
+
+<template id="custom_product_items" inherit_id="website_sale.products_item" name="Product Items">
+    <xpath expr="//div[@class='oe_product_image']" position="replace">
+    </xpath>
+    <xpath expr="//div[@class='ribbon-wrapper']" position="replace">
+    	<div itemscope="itemscope" itemtype="http://schema.org/Product" style="width:145;min-height:300px;">
+                <div class="ribbon-wrapper">
+                    <div class="ribbon btn btn-danger">Sale</div>
+                </div>
+                <div class="oe_product_image">
+                    <div class="product-block" style="height:164px">
+                        <div>
+                            <t t-if="id">
+                                <a t-att-href="keep('/shop/product/%s' % slug(product), category=(product.public_categ_ids.id if product.public_categ_ids.id else None), page=(pager['page']['num'] if pager['page']['num']>1 else None))">
+                                    <img itemprop="image" class="img img-responsive" t-att-src="website.image_url(product, 'image', None if product_image_big else '300x300')"/>
+                                </a>
+                            </t>
+                            <t t-if="not id">
+                                <a t-att-href="keep('/shop/product/%s' % slug(product), page=(pager['page']['num'] if pager['page']['num']>1 else None))">
+                                    <img itemprop="image" class="img img-responsive" t-att-src="website.image_url(product, 'image', None if product_image_big else '300x300')"/>
+                                </a>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </xpath>
+    <xpath expr="//section" position="replace">
+    	<div class="fixeda">
+        <h5 class="name" style="vertical-align:bottom;margin-bottom: 4px; margin-left: 10px; margin-right: 10px; font-family: 'Source Sans Pro', sans-serif;">
+            <t t-if="id">
+                <strong>
+                    <a itemprop="name" t-att-href="keep('/shop/product/%s' % slug(product), category=(product.public_categ_ids.id if product.public_categ_ids.id else None), page=(pager['page']['num'] if pager['page']['num']>1 else None))" t-field="product.name"/>
+                </strong>
+            </t>
+            <t t-if="not id">
+                <strong>
+                    <a itemprop="name" t-att-href="keep('/shop/product/%s' % slug(product), page=(pager['page']['num'] if pager['page']['num']>1 else None))" t-field="product.name"/>
+                </strong>
+            </t>
+        </h5>
+        <div itemprop="offers" itemscope="itemscope" itemtype="http://schema.org/Offer" class="product_price" t-if="product.product_variant_ids">
+            <div class="price">
+                <t t-if="(compute_currency(product.lst_price) - product.price) &gt; 0.1">
+                    <del class="text-danger" style="white-space: nowrap;" t-field="product.lst_price" t-field-options='{
+                        "widget": "monetary",
+                        "from_currency": "website.currency_id",
+                        "display_currency": "user_id.partner_id.property_product_pricelist.currency_id"
+                    }'/>&amp;nbsp;
+                </t>
+                <span t-field="product.price" style="white-space: nowrap;"  t-field-options='{
+                    "widget": "monetary",
+                    "display_currency": "user_id.partner_id.property_product_pricelist.currency_id"
+                }'>
+                </span>
+                <span itemprop="price" style="display:none;" t-esc="product.price"/>
+                <span itemprop="priceCurrency" style="display:none;" t-esc="user_id.partner_id.property_product_pricelist.currency_id.name"/>
+            </div>
+        </div>
+        </div>
+    </xpath>
+</template>
+<template id="custom_add_cart" inherit_id="sale_enhancement.custom_product_items" name="Add to Cart">
+    <xpath expr="//div[@class='product_price']" position="inside">
+              <div class="product-block">
+                <div class="action" style="width:200px">
+                    <div class="cart">
+                        <input name="product_id" t-att-value="product.product_variant_ids[0].id" type="hidden" />
+                        <a class="a-submit">
+                            <button class="btn btn-shopping-cart">
+                                <i class="fa fa-shopping-cart"> </i>
+                                <span>Add to Cart</span>
+                            </button>
+                        </a>
+                    </div>
+                </div>
+             </div>
+    </xpath>
+</template>
+
+<template id="product_page_categ" inherit_id="website_sale.product" name="Product Left Category">
+    <xpath expr="//section/div/div" position="attributes">
+        <attribute name="class">col-sm-7</attribute>
+    </xpath>
+    <xpath expr="//div[@class='col-sm-3']" position="replace">
+    </xpath>
+    <xpath expr="//section[@id='product_detail']" position="replace">
+        <section t-attf-class="container oe_website_sale #{(compute_currency(product.lst_price) - product.price) &gt; 0.1 and 'discount'}" id="product_detail">
+            <div class="row">
+                <div class="col-sm-3 col-md-3">
+                    <div id="pav-verticalmenu" class="box pav-verticalmenu highlighted hidden-xs hidden-sm">
+                        <div class="box-heading">
+                            <span class="fa fa-bars"></span>
+                            All Products
+                            <span class="shapes round">
+                                <em class="shapes bottom"></em>
+                            </span>
+                        </div>
+                        <div class="box-content">
+                            <div class="navbar navbar-default">
+                                <div id="verticalmenu" class="verticalmenu" role="navigation">
+                                    <div class="navbar-header">
+                                        <a href="javascript:;" data-target=".navbar-collapse" data-toggle="collapse" class="navbar-toggle">
+                                            <span class="icon-bar">
+                                            </span>
+                                        </a>
+                                        <div class="collapse navbar-collapse navbar-ex1-collapse">
+                                            <ul id="left_main" class="nav navbar-nav verticalmenu">
+                                                <t t-foreach="categories" t-as="d1">
+                                                    <t t-call="sale_enhancement.product_categories_recursive"/>
+                                                </t>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-6 col-lg-6">
+                    <span itemprop="image" t-field="product.image" t-field-options='{"widget": "image", "class": "product_detail_img"}'/>
+                </div>
+                <div class="col-sm-3 col-md-3 col-lg-3">
+                    <h1 itemprop="name" t-field="product.name">Product Name</h1>
+                    <span itemprop="url" style="display:none;" t-esc="'/shop/product/%s' % slug(product)"/>
+
+                    <form t-att-action="keep('/shop/cart/update')" class="js_add_cart_variants" method="POST">
+                        <div class="js_product">
+                            <t t-placeholder="select">
+                                <input type="hidden" class="product_id" name="product_id" t-att-value="int(product.product_variant_ids[0]) if len(product.product_variant_ids) == 1 else '0'"/>
+                                <t t-call="website_sale.variants">
+                                    <t t-set="ul_class" t-value="'nav-stacked'"/>
+                                </t>
+                            </t>
+                            <t t-call="website_sale.product_price"/>
+                            <p t-if="len(product.product_variant_ids) > 1" class="css_not_available_msg bg-danger" style="padding: 15px;">Product not available</p>
+                            <a id="add_to_cart" class="btn btn-primary btn-lg mt8 js_check_product a-submit" href="#">Add to Cart</a>
+                        </div>
+                    </form>
+                    <hr t-if="product.description_sale"/>
+                        <div><p t-field="product.description_sale" class="text-muted"/></div>
+                    <hr/>
+                    <p class="text-muted">
+                        30-day money-back guarantee<br/>
+                        Free Shipping in U.S.<br/>
+                        Buy now, get in 2 days
+                    </p>
+                </div>
+            </div>
+        </section>
+    </xpath>
+</template>
+	<!-- Template for home page -->
+    <template id="shop_home" name="Home">
+        <t t-call="website.layout">
+            <t t-set="additional_title">Shop</t>
+            <div id="wrap_home" class="container oe_website_sale">
+                <div class="row">
+                    <div class="oe_structure"/>
+                    <div class="col-sm-3 col-md-3">
+                        <div id="pav-verticalmenu" class="box pav-verticalmenu highlighted hidden-xs hidden-sm">
+                            <div class="box-heading">
+                                <span class="fa fa-bars"></span>
+                                All Products
+                                <span class="shapes round">
+                                    <em class="shapes bottom"></em>
+                                </span>
+                            </div>
+                            <div class="box-content">
+                                <div class="navbar navbar-default">
+                                    <div id="verticalmenu" class="verticalmenu" role="navigation">
+                                        <div class="navbar-header">
+                                            <a href="javascript:;" data-target=".navbar-collapse" data-toggle="collapse" class="navbar-toggle">
+                                                <span class="icon-bar">
+                                                </span>
+                                            </a>
+                                            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                                                <ul id="left_main" class="nav navbar-nav verticalmenu">
+                                                    <t t-foreach="categories" t-as="d1">
+                                                        <t t-call="sale_enhancement.product_categories_recursive"/>
+                                                    </t>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-9 col-md-9">
+                        <div class="oe_structure"/>
+                    </div>
+                </div>
+                <div class="oe_structure"/>
+            </div>
+        </t>
+    </template>
+<!-- Template customize code for multiple product images -->
+    <template id="multi_image_product" inherit_id="sale_enhancement.product_page_categ" name="Multi Product Images" customize_show="True">
+        <xpath expr="//span[@t-field='product.image']" position="replace">
+            <div id="gallery" class="owl-carousel main_images">
+                <span itemprop="image" id="image" t-field="product.image" t-field-options='{"widget": "image", "class": "product_detail_img"}'/>
+                <t t-foreach="product.images" t-as="i">
+                    <span t-field="i.image" id="image" t-field-options='{"widget": "image", "class": "product_detail_img", "alt": "i.image_alt"}'/>
+                </t>
+            </div>
+            <div id="image-additional-carousel" class="owl-carousel sub_images">
+                <span itemprop="image" t-field="product.image" t-field-options='{"widget": "image", "class": "product_detail_img"}'/>
+                <t t-foreach="product.images" t-as="i">
+                    <span t-field="i.image" class="item" t-field-options="{&quot;widget&quot;: &quot;image&quot;, &quot;class&quot;: &quot;product_detail_img&quot;, &quot;alt&quot;: &quot;i.image_alt&quot;}"/>
+                </t>
+            </div>
+        </xpath>
+    </template>
+
+</data>
+</openerp>
